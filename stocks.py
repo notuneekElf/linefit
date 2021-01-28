@@ -27,5 +27,14 @@ forecasting='Adj_Close'
 #nan cleaning hehe
 df.fillna(-99.999)
 #this is the potential range of values the model will predict, here at 10%
-forecasted=int(math.ceil(0.10*len(df)))
+forecasted=int(math.ceil(0.01*len(df)))
 df['label']=df[forecasting].shift(-forecasted)
+df.dropna(inplace=True)
+X=np.array(df.drop(['label'],1))
+X=preprocessing.scale(X)
+Y=np.array(df['label'])
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.3)
+clf=LinearRegression()
+clf.fit(X_train, Y_train)
+forecast_set=clf.predict(X)
+mean_squared_error(forecast_set,forecasted)
